@@ -4,7 +4,7 @@ import colors from './colors';
 import moment from 'moment';
 
 export const ganttChart = (config) => {
-    console.log({config});
+    window.moment = moment;
     const data = config.data;
     const ELEMENT = d3.select(config.element);
     const CHART_WIDTH = ELEMENT._groups[0][0].offsetWidth;    
@@ -38,7 +38,7 @@ export const ganttChart = (config) => {
                 config.metrics.month = moment(config.metrics.month, 'MMMM YYYY').add(1, 'months').format('MMMM YYYY');
                 break;
             case "quarterly":
-                months_count = config.metrics.months.length;
+                const months_count = config.metrics.months.length;
                 for (let i = 0; i < months_count; i++) {
                     config.metrics.months[i] = moment(config.metrics.months[i], 'MMMM YYYY').add(months_count, 'months').format('MMMM YYYY');
                 };
@@ -49,6 +49,7 @@ export const ganttChart = (config) => {
     }
 
     function goToPrevious() {
+        
         switch (config.metrics.type) {
             case "yearly":
                 config.metrics.year = config.metrics.year - 1;
@@ -64,9 +65,9 @@ export const ganttChart = (config) => {
                 config.metrics.month = moment(config.metrics.month, 'MMMM YYYY').subtract(1, 'months').format('MMMM YYYY');
                 break;
             case "quarterly":
-                months_count = config.metrics.months.length;
+                const months_count = config.metrics.months.length;
                 for (let i = 0; i < months_count; i++) {
-                    config.metrics.months[i] = moment(config.metrics.months[i], 'MMMM').subtract(months_count, 'months').format('MMMM YYYY');
+                    let m = moment(config.metrics.months[i], 'MMMM YYYY').subtract(months_count, 'months').format('MMMM YYYY');
                 };
                 break;
         }
