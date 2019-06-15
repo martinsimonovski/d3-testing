@@ -10,8 +10,8 @@ export default [
           name: 'Paynova'
         },
         id: 1,
-        from: '2018-10-09',
-        to: '2019-06-03'
+        startDate: '2018-10-09',
+        endDate: '2019-06-03'
       },
       {
         project: {
@@ -19,8 +19,8 @@ export default [
           name: 'Kodiak'
         },
         id: 2,
-        from: '2019-06-04',
-        to: null
+        startDate: '2019-06-04',
+        endDate: null
       },
       {
         project: {
@@ -28,8 +28,8 @@ export default [
           name: 'Aifloo'
         },
         id: 1,
-        from: '2017-05-01',
-        to: '2017-12-01'
+        startDate: '2017-05-01',
+        endDate: '2017-12-01'
       },
       {
         project: {
@@ -37,8 +37,8 @@ export default [
           name: 'Pedab'
         },
         id: 4,
-        from: '2018-01-01',
-        to: '2018-12-31'
+        startDate: '2018-01-01',
+        endDate: '2018-12-31'
       },
       {
         project: {
@@ -46,8 +46,8 @@ export default [
           name: 'Telinet'
         },
         id: 5,
-        from: '2017-02-01',
-        to: '2017-06-15'
+        startDate: '2017-02-01',
+        endDate: '2017-06-15'
       }
     ]
   },
@@ -62,8 +62,8 @@ export default [
           name: 'Alma Talentum'
         },
         id: 6,
-        from: '2016-03-01',
-        to: '2017-04-13'
+        startDate: '2016-03-01',
+        endDate: '2017-04-13'
       },
       {
         project: {
@@ -71,8 +71,8 @@ export default [
           name: 'Srs'
         },
         id: 7,
-        from: '2017-04-13',
-        to: '2018-08-08'
+        startDate: '2017-04-13',
+        endDate: '2018-08-08'
       },
       {
         project: {
@@ -80,8 +80,8 @@ export default [
           name: 'Med Universe'
         },
         id: 8,
-        from: '2018-08-09',
-        to: '2019-10-01'
+        startDate: '2018-08-09',
+        endDate: '2019-10-01'
       },
       {
         project: {
@@ -89,8 +89,8 @@ export default [
           name: 'Tr3'
         },
         id: 9,
-        from: '2018-10-01',
-        to: '2018-12-31'
+        startDate: '2018-10-01',
+        endDate: '2018-12-31'
       },
       {
         project: {
@@ -98,8 +98,8 @@ export default [
           name: 'Med Universe'
         },
         id: 8,
-        from: '2019-01-01',
-        to: null
+        startDate: '2019-01-01',
+        endDate: null
       }
     ]
   }

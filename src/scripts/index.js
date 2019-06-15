@@ -23,7 +23,7 @@ const chartOpt = {
   tick: 'day' // [day, week, month, threeMonths, ]
 };
 
-const flattenSource = data => {
+const flattenSource = source => {
   let x0 = 0,
     y0 = 0,
     barHeight = 20,
@@ -189,14 +189,14 @@ const Chart = opts => {
 // new Chart(chartOpt);
 
 // --------------------------------------------------------------------------
-import { ganttChart } from './time';
+import { ganttChart } from './time-working';
 var data2 = [
   {
     id: 1,
     title:
       'Make significant improvements in the UI/UX Design Process Make significant improvements in the UI/UX Design Process',
-    start_date: '08/08/2016',
-    end_date: '03/09/2017',
+    startDate: '08/08/2016',
+    endDate: '03/09/2017',
     value: 67,
     term: 'Short Term',
     completion_percentage: 29,
@@ -206,8 +206,8 @@ var data2 = [
     id: 2,
     title:
       'Make significant improvements in the UI/UX Design Process Make significant improvements in the UI/UX Design Process',
-    start_date: '11/01/2017',
-    end_date: '03/09/2018',
+    startDate: '11/01/2017',
+    endDate: '03/09/2018',
     value: 67,
     term: 'Short Term',
     completion_percentage: 29,
@@ -217,8 +217,8 @@ var data2 = [
     id: 3,
     title:
       'Make significant improvements in the UI/UX Design Process Make significant improvements in the UI/UX Design Process',
-    start_date: '04/15/2017',
-    end_date: '06/14/2017',
+    startDate: '04/15/2017',
+    endDate: '06/14/2017',
     value: 67,
     term: 'Short Term',
     completion_percentage: 29,
@@ -228,8 +228,8 @@ var data2 = [
     id: 4,
     title:
       'Make significant improvements in the UI/UX Design Process Make significant improvements in the UI/UX Design Process',
-    start_date: '06/11/2017',
-    end_date: '08/30/2017',
+    startDate: '06/11/2017',
+    endDate: '08/30/2017',
     value: 67,
     term: 'Short Term',
     completion_percentage: 29,
@@ -239,8 +239,8 @@ var data2 = [
     id: 5,
     title:
       'Make significant improvements in the UI/UX Design Process Make significant improvements in the UI/UX Design Process',
-    start_date: '07/31/2017',
-    end_date: '12/09/2017',
+    startDate: '07/31/2017',
+    endDate: '12/09/2017',
     value: 67,
     term: 'Short Term',
     completion_percentage: 29,
@@ -281,14 +281,14 @@ var config = {
   data: data2, // Your actuall data
   element: '#chart', // The element for rendering the chart
   box_padding: 10, // Padding for the blocks
-  // metrics: {type: "overall", years: [2016, 2017, 2018]}, // Type of gantt
-  // metrics: {type: "sprint", year: 2017, cycles: cycles}, // Type of gantt
-  // metrics: { type: 'yearly', year: 2017 }, // Type of gantt
-  // metrics: {type: "monthly", month: 'March 2017'}, // For Monthly Data
-  metrics: {
-    type: 'quarterly',
-    months: ['January 2017', 'February 2017', 'March 2017']
-  }, // For quarterly or half yearly data
+  // metrics: { type: 'overall', years: [2016, 2017, 2018] }, // Type of gantt
+  // metrics: { type: 'sprint', year: 2017, cycles: cycles }, // Type of gantt
+  metrics: { type: 'yearly', year: 2017 }, // Type of gantt
+  // metrics: { type: 'monthly', month: 'March 2017' }, // For Monthly Data
+  // metrics: {
+  //   type: 'quarterly',
+  //   months: ['January 2017', 'February 2017', 'March 2017']
+  // }, // For quarterly or half yearly data
   onClick: function(data) {
     console.log(data); // Onclick of each node
   },
@@ -299,4 +299,36 @@ var config = {
     console.log('Clicked On' + location);
   }
 };
-ganttChart(config);
+
+// ganttChart(config);
+import { gantt } from './gantt';
+
+const flatData = [];
+data.forEach(item => {
+  const assignments = item.assignments;
+  delete item.assignments;
+  item.parent = null;
+  item.name = item.firstName + ' ' + item.lastName;
+  flatData.push(item);
+
+  assignments.forEach(a => {
+    a.parent = item.id;
+    a.name = a.project.name;
+    a.color = a.project.color;
+    flatData.push(a);
+  });
+});
+console.log(flatData);
+
+const conf = {
+  data: flatData,
+  container: '#chart',
+  box_padding: 10,
+  metrics: {
+    type: 'yearly',
+    startDate: '2018-01-01 10:11:12.123456',
+    endDate: null,
+    subType: 'months'
+  }
+};
+gantt(conf);
