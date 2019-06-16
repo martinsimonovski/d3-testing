@@ -48,6 +48,15 @@ export default [
         id: 5,
         startDate: '2017-02-01',
         endDate: '2017-06-15'
+      },
+      {
+        project: {
+          id: 3,
+          name: 'Aifloo'
+        },
+        id: 11,
+        startDate: '2018-05-01',
+        endDate: '2018-12-01'
       }
     ]
   },
@@ -97,7 +106,7 @@ export default [
           id: 8,
           name: 'Med Universe'
         },
-        id: 8,
+        id: 10,
         startDate: '2019-01-01',
         endDate: null
       }

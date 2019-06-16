@@ -192,5 +192,86 @@ export default {
       startDate: moment(startDate).toDate(),
       endDate: moment(endDate).toDate()
     };
+  },
+
+  convertData: (data, type, filterId) => {
+    const rawData = JSON.parse(JSON.stringify(data));
+    let flatData = [];
+    let position = 0;
+
+    if (type === 'resource') {
+      rawData.map(item => {
+        const projects = item.projects;
+        delete item.projects;
+        item.parent = null;
+        item.name = item.firstName + ' ' + item.lastName;
+        item.isParent = true;
+        item.dates = [];
+        item.position = position;
+        flatData.push(item);
+
+        projects.map((p, index) => {
+          position++;
+          p.parent = item.id;
+          p.isParent = false;
+          p.position = position;
+          p.dates = [];
+
+          p.assignments.map(a => {
+            a.color = p.color;
+            a.position = p.position;
+            a.parentId = p.id;
+            p.type = 'project';
+            p.dates.push(a);
+          });
+
+          flatData.push(p);
+        });
+        position++;
+      });
+    } else if (type === 'project') {
+      flatData.push({ id: filterId, position: 0 });
+      rawData.map(resource => {
+        resource.projects.map(project => {
+          if (!flatData[0].name && project.id === filterId) {
+            let projectItem = {
+              id: project.id,
+              name: project.name,
+              parent: null,
+              isParent: true,
+              position: 0,
+              dates: []
+            };
+            flatData[0] = projectItem;
+          }
+
+          if (project.id === filterId) {
+            position++;
+            let projectItem = {
+              id: resource.id,
+              name: resource.firstName + ' ' + resource.lastName,
+              parent: resource.id,
+              isParent: false,
+              position: position
+            };
+            let dates = [];
+            project.assignments.map(a => {
+              dates.push({
+                startDate: a.startDate,
+                endDate: a.endDate,
+                color: project.color,
+                parentId: project.id,
+                position: position,
+                type: 'resource'
+              });
+            });
+            projectItem.dates = dates;
+            flatData.push(projectItem);
+          }
+        });
+      });
+    }
+    console.log(flatData);
+    return flatData;
   }
 };

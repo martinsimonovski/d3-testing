@@ -87,21 +87,25 @@ export const gantt = config => {
   const { metrics, container, data } = config;
   const element = d3.select(container);
   const chartWidth = element._groups[0][0].offsetWidth;
-  const chartHeight = 500;
   const cellHeight = 30;
   const leftSideWidth = 300;
+  const rawData = JSON.parse(JSON.stringify(data));
+  const convertedData = utils.convertData(data, 'resource');
 
-  draw('initial');
-  function draw(state) {
+  draw('initial', convertedData);
+  function draw(state, data) {
+    const chartHeight = d3.max([data.length * cellHeight + 120]);
     d3.select(container)._groups[0][0].innerHTML = '';
-    let { months, headerRanges, subHeaderRanges, dateBoundary } = getBoundaries(
+    let { headerRanges, subHeaderRanges, dateBoundary } = getBoundaries(
       metrics
     );
 
-    // DEFINE DIMENSIONS
+    // DEFINE DIMENSIONS AND SCALES
     let margin = { top: 20, right: 0, bottom: 100, left: 0 };
     let width = d3.max([chartWidth, 500]) - margin.left - margin.right;
     let height = chartHeight - margin.top - margin.bottom;
+
+    const t = d3.transition().duration(500);
 
     const x = d3
       .scaleTime()
@@ -109,7 +113,6 @@ export const gantt = config => {
       .range([0, width - leftSideWidth]);
 
     const y = d3.scaleBand().range([0, height], 0.1);
-
     y.domain(data.map((d, i) => i + 1));
 
     // DEFINE AXISES
@@ -179,31 +182,6 @@ export const gantt = config => {
       .append('g')
       .attr('width', width - leftSideWidth)
       .attr('transform', `translate(${margin.left + leftSideWidth}, 0)`);
-    // .call(appendStartLine);
-
-    // function appendStartLine() {
-    //   d3.selectAll('.start-lines')
-    //     .data(data)
-    //     .enter()
-    //     .append('line')
-    //     .attr('class', 'start-lines')
-    //     .attr('stroke', d => d.color)
-    //     .attr('x1', d => x(new Date(d.startDate)) + 10)
-    //     .attr('x2', d => x(new Date(d.endDate)) + 10)
-    //     .attr('y1', 0)
-    //     .attr('y2', (d, i) => y(i + 1) + 20);
-
-    //   d3.selectAll('.endLines')
-    //     .data(data)
-    //     .enter()
-    //     .append('line')
-    //     .attr('stroke', d => d.color)
-    //     .attr('class', 'end-lines')
-    //     .attr('x1', d => x(new Date(d.endDate)) + 5)
-    //     .attr('x2', d => x(new Date(d.endDate)) + 5)
-    //     .attr('y1', 0)
-    //     .attr('y2', (d, i) => y(i + 1) + 20);
-    // }
 
     const lines = svg.append('g').attr('transform', 'translate(0, 0)');
 
@@ -272,32 +250,6 @@ export const gantt = config => {
       .attr('y1', 0)
       .attr('y2', height);
 
-    const bars = svg.append('g').attr('transform', 'translate(0, 0)');
-
-    const blocks = bars
-      .selectAll('.bar')
-      .data(data)
-      .enter()
-      .append('g')
-      .attr('class', 'single-block cp')
-      .attr('transform', d => {
-        if (d.startDate) {
-          return `translate(${x(new Date(d.startDate))}, 0)`;
-        }
-      })
-      .call(appendBar);
-
-    const horizontalLines = bars
-      .selectAll('.bar')
-      .data(data)
-      .enter()
-      .append('line')
-      .attr('class', 'date-line')
-      .attr('x1', 0)
-      .attr('x2', x(new Date(dateBoundary[1])))
-      .attr('y1', (d, i) => y(i + 1))
-      .attr('y2', (d, i) => y(i + 1));
-
     const cells = leftSideCells
       .selectAll('.headers')
       .data(data)
@@ -318,6 +270,40 @@ export const gantt = config => {
       .attr('x', d => (d.isParent ? 10 : 30))
       .attr('y', (d, i) => y(i + 1) - 10 + cellHeight)
       .text(d => d.name);
+
+    const bars = svg.append('g').attr('transform', 'translate(0, 0)');
+
+    const blocks = bars
+      .selectAll('.bar')
+      .data(data)
+      .enter()
+      .append('g');
+
+    const rects = blocks
+      .selectAll('.bar')
+      .data(d => d.dates)
+      .enter()
+      .append('g')
+      .attr('class', 'single-block cp')
+      .attr('transform', d => {
+        if (d.startDate) {
+          return `translate(${x(new Date(d.startDate))}, 0)`;
+        }
+      })
+      .call(appendBar);
+
+    rects.transition(t).attr('opacity', 1);
+
+    const horizontalLines = bars
+      .selectAll('.bar')
+      .data(data)
+      .enter()
+      .append('line')
+      .attr('class', 'date-line')
+      .attr('x1', 0)
+      .attr('x2', x(new Date(dateBoundary[1])))
+      .attr('y1', (d, i) => y(i + 1))
+      .attr('y2', (d, i) => y(i + 1));
 
     leftSideCells.raise(); // hide the bars
 
@@ -348,18 +334,27 @@ export const gantt = config => {
       return moment(node.endDate, 'MM/DD/YYYY').isAfter(dateBoundary[1]);
     }
 
-    function appendBar(d, i) {
+    function appendBar(d) {
       d.append('rect')
         .attr('class', 'Single-node')
         .attr('rx', 5)
         .attr('ry', 5)
         .attr('height', 20)
         .attr('x', 0)
-        .attr('y', (d, i) => {
-          return y(i + 1) + 5;
-        })
+        .attr('y', d => y(d.position + 1) + 5)
         .attr('width', d => (d.startDate ? getActualWidth(d) + 10 : 0))
-        .attr('fill', (d, i) => `#${colors[i]}`);
+        .attr('fill', d => `#${d.color}`)
+        .on('click', clickProject);
+    }
+
+    function clickProject(d, i, j) {
+      let converted = [];
+      if (d.type === 'resource') {
+        converted = utils.convertData(rawData, 'resource');
+      } else {
+        converted = utils.convertData(rawData, 'project', d.parentId);
+      }
+      draw('initial', converted);
     }
   }
 };

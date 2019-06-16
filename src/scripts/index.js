@@ -302,28 +302,11 @@ var config = {
 
 // ganttChart(config);
 import { gantt } from './gantt';
-
-const flatData = [];
-data.forEach(item => {
-  const assignments = item.assignments;
-  delete item.assignments;
-  item.parent = null;
-  item.name = item.firstName + ' ' + item.lastName;
-  item.isParent = true;
-  flatData.push(item);
-
-  assignments.forEach(a => {
-    a.parent = item.id;
-    a.name = a.project.name;
-    a.color = a.project.color;
-    a.isParent = false;
-    flatData.push(a);
-  });
-});
-console.log(flatData);
+import data1 from './data.1';
+import bigData from './bigData';
 
 const conf = {
-  data: flatData,
+  data: data1,
   container: '#chart',
   box_padding: 10,
   metrics: {

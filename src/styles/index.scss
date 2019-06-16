@@ -14,8 +14,9 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
-.chart {
-  overflow-x: hidden;
+#chart {
+  outline: 1px solid #ededed;
+  overflow: hidden;
 }
 .cp {
   cursor: pointer;
