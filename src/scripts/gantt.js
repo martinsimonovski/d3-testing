@@ -307,6 +307,28 @@ export const gantt = config => {
 
     leftSideCells.raise(); // hide the bars
 
+    // TOOLTIP
+    const tooltipWidth = 100;
+    const tooltip = drawArea
+      .append('g')
+      .attr('class', 'tooltip')
+      .style('display', 'none');
+
+    tooltip
+      .append('rect')
+      .attr('width', tooltipWidth)
+      .attr('height', 20)
+      .attr('fill', 'white')
+      .style('opacity', 0.5);
+
+    tooltip
+      .append('text')
+      .attr('x', tooltipWidth / 2)
+      .attr('y', 15)
+      .style('text-anchor', 'middle')
+      .attr('font-size', '12px')
+      .attr('font-weight', 'bold');
+
     function getWidth(node) {
       if (endsAfter(node)) {
         width = Math.abs(
@@ -334,6 +356,22 @@ export const gantt = config => {
       return moment(node.endDate, 'MM/DD/YYYY').isAfter(dateBoundary[1]);
     }
 
+    function mouseover() {
+      tooltip.style('display', 'inline');
+    }
+    function mousemove(d) {
+      let xPosition = d3.event.pageX - 5;
+      let yPosition = d3.event.pageY - 5;
+      tooltip
+        .attr('transform', 'translate(' + xPosition + ',' + yPosition + ')')
+        .select('text')
+        .text(`Assigned: ${d.availability}%`);
+    }
+
+    function mouseout() {
+      tooltip.style('display', 'none');
+    }
+
     function appendBar(d) {
       d.append('rect')
         .attr('class', 'Single-node')
@@ -344,10 +382,13 @@ export const gantt = config => {
         .attr('y', d => y(d.position + 1) + 5)
         .attr('width', d => (d.startDate ? getActualWidth(d) + 10 : 0))
         .attr('fill', d => `#${d.color}`)
-        .on('click', clickProject);
+        .on('click', clickBar)
+        .on('mouseover', mouseover)
+        .on('mouseout', mouseout)
+        .on('mousemove', mousemove);
     }
 
-    function clickProject(d, i, j) {
+    function clickBar(d, i, j) {
       let converted = [];
       if (d.type === 'resource') {
         converted = utils.convertData(rawData, 'resource');

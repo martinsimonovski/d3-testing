@@ -11,7 +11,8 @@ export default [
         assignments: [
           {
             startDate: '2018-10-09',
-            endDate: '2019-06-03'
+            endDate: '2019-06-03',
+            availability: 100
           }
         ]
       },
@@ -22,7 +23,8 @@ export default [
         assignments: [
           {
             startDate: '2019-06-04',
-            endDate: null
+            endDate: null,
+            availability: 100
           }
         ]
       },
@@ -33,11 +35,13 @@ export default [
         assignments: [
           {
             startDate: '2017-05-01',
-            endDate: '2017-12-01'
+            endDate: '2017-12-01',
+            availability: 100
           },
           {
             startDate: '2018-05-01',
-            endDate: '2018-12-01'
+            endDate: '2018-12-01',
+            availability: 100
           }
         ]
       },
@@ -48,7 +52,8 @@ export default [
         assignments: [
           {
             startDate: '2018-01-01',
-            endDate: '2018-12-31'
+            endDate: '2018-12-31',
+            availability: 100
           }
         ]
       },
@@ -59,7 +64,8 @@ export default [
         assignments: [
           {
             startDate: '2017-02-01',
-            endDate: '2017-06-15'
+            endDate: '2017-06-15',
+            availability: 50
           }
         ]
       }
@@ -77,7 +83,8 @@ export default [
         assignments: [
           {
             startDate: '2016-03-01',
-            endDate: '2017-04-13'
+            endDate: '2017-04-13',
+            availability: 100
           }
         ]
       },
@@ -88,7 +95,8 @@ export default [
         assignments: [
           {
             startDate: '2017-04-13',
-            endDate: '2018-08-08'
+            endDate: '2018-08-08',
+            availability: 100
           }
         ]
       },
@@ -99,11 +107,13 @@ export default [
         assignments: [
           {
             startDate: '2017-08-09',
-            endDate: '2018-10-01'
+            endDate: '2018-10-01',
+            availability: 80
           },
           {
             startDate: '2019-01-01',
-            endDate: null
+            endDate: null,
+            availability: 80
           }
         ]
       },
@@ -114,7 +124,8 @@ export default [
         assignments: [
           {
             startDate: '2018-10-01',
-            endDate: '2018-12-31'
+            endDate: '2018-12-31',
+            availability: 20
           }
         ]
       }
@@ -132,7 +143,13 @@ export default [
         assignments: [
           {
             startDate: '2017-04-01',
-            endDate: '2018-09-10'
+            endDate: '2018-06-10',
+            availability: 100
+          },
+          {
+            startDate: '2018-06-10',
+            endDate: '2018-10-10',
+            availability: 100
           }
         ]
       },
@@ -142,8 +159,14 @@ export default [
         color: 'a5dee5',
         assignments: [
           {
-            startDate: '2018-04-13',
-            endDate: null
+            startDate: '2018-06-10',
+            endDate: '2018-10-01',
+            availability: 60
+          },
+          {
+            startDate: '2018-10-15',
+            endDate: null,
+            availability: 100
           }
         ]
       }

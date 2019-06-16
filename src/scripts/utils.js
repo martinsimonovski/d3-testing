@@ -221,7 +221,7 @@ export default {
             a.color = p.color;
             a.position = p.position;
             a.parentId = p.id;
-            p.type = 'project';
+            a.type = 'project';
             p.dates.push(a);
           });
 
@@ -262,6 +262,7 @@ export default {
                 color: project.color,
                 parentId: project.id,
                 position: position,
+                availability: a.availability,
                 type: 'resource'
               });
             });
@@ -271,7 +272,7 @@ export default {
         });
       });
     }
-    console.log(flatData);
+
     return flatData;
   }
 };
