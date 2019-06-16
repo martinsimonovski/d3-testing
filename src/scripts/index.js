@@ -309,12 +309,14 @@ data.forEach(item => {
   delete item.assignments;
   item.parent = null;
   item.name = item.firstName + ' ' + item.lastName;
+  item.isParent = true;
   flatData.push(item);
 
   assignments.forEach(a => {
     a.parent = item.id;
     a.name = a.project.name;
     a.color = a.project.color;
+    a.isParent = false;
     flatData.push(a);
   });
 });
@@ -325,8 +327,8 @@ const conf = {
   container: '#chart',
   box_padding: 10,
   metrics: {
-    type: 'yearly',
-    startDate: '2018-01-01 10:11:12.123456',
+    type: 'overall',
+    startDate: '2018-08-01 10:11:12.123456',
     endDate: null,
     subType: 'months'
   }

@@ -89,6 +89,7 @@ export const gantt = config => {
   const chartWidth = element._groups[0][0].offsetWidth;
   const chartHeight = 500;
   const cellHeight = 30;
+  const leftSideWidth = 300;
 
   draw('initial');
   function draw(state) {
@@ -98,14 +99,14 @@ export const gantt = config => {
     );
 
     // DEFINE DIMENSIONS
-    let margin = { top: 20, right: 50, bottom: 100, left: 50 };
+    let margin = { top: 20, right: 0, bottom: 100, left: 0 };
     let width = d3.max([chartWidth, 500]) - margin.left - margin.right;
     let height = chartHeight - margin.top - margin.bottom;
 
     const x = d3
       .scaleTime()
       .domain(dateBoundary)
-      .range([0, width]);
+      .range([0, width - leftSideWidth]);
 
     const y = d3.scaleBand().range([0, height], 0.1);
 
@@ -134,8 +135,28 @@ export const gantt = config => {
       .style('height', cellHeight)
       .append('svg')
       .attr('width', width + margin.left + margin.right)
+      .attr('height', cellHeight);
+
+    const leftSideHeader = periodSection
+      .append('g')
+      .attr('width', 300)
+      .attr('height', 30);
+
+    leftSideHeader
+      .append('rect')
+      .attr('width', leftSideWidth)
       .attr('height', cellHeight)
-      .append('g');
+      .attr('class', 'Date-Block-Outline');
+
+    leftSideHeader
+      .append('text')
+      .text('Resources')
+      .attr('x', 10)
+      .attr('y', cellHeight - 10);
+
+    const periodRanges = periodSection
+      .append('g')
+      .attr('transform', 'translate(300, 0)');
 
     switch (state) {
       case 'initial':
@@ -152,34 +173,37 @@ export const gantt = config => {
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom);
 
+    const leftSideCells = drawArea.append('g');
+
     const svg = drawArea
       .append('g')
-      .attr('transform', `translate(${margin.left}, 0)`)
-      .call(appendStartLine);
+      .attr('width', width - leftSideWidth)
+      .attr('transform', `translate(${margin.left + leftSideWidth}, 0)`);
+    // .call(appendStartLine);
 
-    function appendStartLine() {
-      d3.selectAll('.start-lines')
-        .data(data)
-        .enter()
-        .append('line')
-        .attr('class', 'start-lines')
-        .attr('stroke', d => d.color)
-        .attr('x1', d => x(new Date(d.startDate)) + 10)
-        .attr('x2', d => x(new Date(d.endDate)) + 10)
-        .attr('y1', 0)
-        .attr('y2', (d, i) => y(i + 1) + 20);
+    // function appendStartLine() {
+    //   d3.selectAll('.start-lines')
+    //     .data(data)
+    //     .enter()
+    //     .append('line')
+    //     .attr('class', 'start-lines')
+    //     .attr('stroke', d => d.color)
+    //     .attr('x1', d => x(new Date(d.startDate)) + 10)
+    //     .attr('x2', d => x(new Date(d.endDate)) + 10)
+    //     .attr('y1', 0)
+    //     .attr('y2', (d, i) => y(i + 1) + 20);
 
-      d3.selectAll('.endLines')
-        .data(data)
-        .enter()
-        .append('line')
-        .attr('stroke', d => d.color)
-        .attr('class', 'end-lines')
-        .attr('x1', d => x(new Date(d.endDate)) + 5)
-        .attr('x2', d => x(new Date(d.endDate)) + 5)
-        .attr('y1', 0)
-        .attr('y2', (d, i) => y(i + 1) + 20);
-    }
+    //   d3.selectAll('.endLines')
+    //     .data(data)
+    //     .enter()
+    //     .append('line')
+    //     .attr('stroke', d => d.color)
+    //     .attr('class', 'end-lines')
+    //     .attr('x1', d => x(new Date(d.endDate)) + 5)
+    //     .attr('x2', d => x(new Date(d.endDate)) + 5)
+    //     .attr('y1', 0)
+    //     .attr('y2', (d, i) => y(i + 1) + 20);
+    // }
 
     const lines = svg.append('g').attr('transform', 'translate(0, 0)');
 
@@ -190,12 +214,15 @@ export const gantt = config => {
       .append('text')
       .attr('class', 'first-title')
       .attr('y', -5)
-      .attr('x', d => x(new Date(d.startDate)) + getWidth(d) / 2)
+      .attr(
+        'x',
+        d => x(new Date(d.startDate)) + leftSideWidth / 2 + getWidth(d) / 2
+      )
       .attr('width', d => getWidth(d))
       .attr('height', y.bandwidth())
       .text(d => d.name);
 
-    periodSection
+    periodRanges
       .append('rect')
       .attr('x', x(new Date(dateBoundary[0])))
       .attr(
@@ -205,7 +232,7 @@ export const gantt = config => {
       .attr('height', cellHeight)
       .attr('class', 'Date-Block-Outline');
 
-    periodSection
+    periodRanges
       .append('g')
       .selectAll('.bar')
       .data(subHeaderRanges)
@@ -219,7 +246,7 @@ export const gantt = config => {
         d => `Date-Block Date-${moment(d.startDate).format('MMYYYY')}`
       );
 
-    periodSection
+    periodRanges
       .append('g')
       .selectAll('.bar')
       .data(subHeaderRanges)
@@ -245,7 +272,7 @@ export const gantt = config => {
       .attr('y1', 0)
       .attr('y2', height);
 
-    const bars = svg.append('g').attr('transform', 'translate(0, 20)');
+    const bars = svg.append('g').attr('transform', 'translate(0, 0)');
 
     const blocks = bars
       .selectAll('.bar')
@@ -259,6 +286,40 @@ export const gantt = config => {
         }
       })
       .call(appendBar);
+
+    const horizontalLines = bars
+      .selectAll('.bar')
+      .data(data)
+      .enter()
+      .append('line')
+      .attr('class', 'date-line')
+      .attr('x1', 0)
+      .attr('x2', x(new Date(dateBoundary[1])))
+      .attr('y1', (d, i) => y(i + 1))
+      .attr('y2', (d, i) => y(i + 1));
+
+    const cells = leftSideCells
+      .selectAll('.headers')
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('x', 0)
+      .attr('y', (d, i) => y(i + 1))
+      .attr('width', leftSideWidth)
+      .attr('height', cellHeight)
+      .attr('class', 'Date-Block-Outline');
+
+    leftSideCells
+      .selectAll('.headers')
+      .data(data)
+      .enter()
+      .append('text')
+      .attr('class', d => (d.isParent ? 'header-parent' : 'header-child'))
+      .attr('x', d => (d.isParent ? 10 : 30))
+      .attr('y', (d, i) => y(i + 1) - 10 + cellHeight)
+      .text(d => d.name);
+
+    leftSideCells.raise(); // hide the bars
 
     function getWidth(node) {
       if (endsAfter(node)) {
@@ -295,8 +356,7 @@ export const gantt = config => {
         .attr('height', 20)
         .attr('x', 0)
         .attr('y', (d, i) => {
-          console.log(y(i + 1));
-          return y(i + 1);
+          return y(i + 1) + 5;
         })
         .attr('width', d => (d.startDate ? getActualWidth(d) + 10 : 0))
         .attr('fill', (d, i) => `#${colors[i]}`);
