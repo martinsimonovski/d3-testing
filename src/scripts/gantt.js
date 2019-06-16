@@ -192,7 +192,7 @@ export const gantt = config => {
       .append('svg')
       .attr('class', 'drawareaSvg')
       .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom);
+      .attr('height', height);
 
     const leftSideCells = drawArea.append('g');
 
