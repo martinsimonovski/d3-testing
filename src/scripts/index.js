@@ -314,6 +314,9 @@ const conf = {
     startDate: '2018-08-01 10:11:12.123456',
     endDate: null,
     subType: 'months'
+  },
+  headerAdd: () => {
+    alert('Yeyy!!!');
   }
 };
 gantt(conf);

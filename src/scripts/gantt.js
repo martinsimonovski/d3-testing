@@ -84,7 +84,9 @@ function getBoundaries(metrics) {
 }
 
 export const gantt = config => {
-  const { metrics, container, data } = config;
+  const { metrics, container, data, headerAdd } = config;
+  if (!headerAdd) headerAdd = () => {};
+
   const element = d3.select(container);
   const chartWidth = element._groups[0][0].offsetWidth;
   const cellHeight = 30;
@@ -156,6 +158,22 @@ export const gantt = config => {
       .text('Resources')
       .attr('x', 10)
       .attr('y', cellHeight - 10);
+
+    const symbolGenerator = d3
+      .symbol()
+      .type(d3.symbolCross)
+      .size(80);
+
+    const pathData = symbolGenerator();
+
+    leftSideHeader
+      .append('path')
+      .attr('width', 20)
+      .attr('height', 20)
+      .attr('d', pathData)
+      .attr('transform', `translate(${leftSideWidth - 30}, ${cellHeight - 15})`)
+      .style('fill', 'grey')
+      .on('click', headerAdd);
 
     const periodRanges = periodSection
       .append('g')
@@ -356,9 +374,10 @@ export const gantt = config => {
       return moment(node.endDate, 'MM/DD/YYYY').isAfter(dateBoundary[1]);
     }
 
-    function mouseover() {
+    function mouseover(d) {
       tooltip.style('display', 'inline');
     }
+
     function mousemove(d) {
       let xPosition = d3.event.pageX - 5;
       let yPosition = d3.event.pageY - 5;
