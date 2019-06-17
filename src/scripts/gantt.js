@@ -84,7 +84,7 @@ function getBoundaries(metrics) {
 }
 
 export const gantt = config => {
-  const { metrics, container, data, headerAdd } = config;
+  const { metrics, container, data, headerAdd, showChildColor } = config;
   if (!headerAdd) headerAdd = () => {};
 
   const element = d3.select(container);
@@ -291,13 +291,40 @@ export const gantt = config => {
 
     const bars = svg.append('g').attr('transform', 'translate(0, 0)');
 
-    const blocks = bars
+    let { parents, childs } = utils.splitNodes(data);
+
+    parents = utils.convertParentData(parents);
+
+    // Add the parent bars
+    const parentBlocks = bars
       .selectAll('.bar')
-      .data(data)
+      .data(parents)
       .enter()
       .append('g');
 
-    const rects = blocks
+    const parentRects = parentBlocks
+      .selectAll('.bar')
+      .data(d => d.dates)
+      .enter()
+      .append('g')
+      .attr('class', 'single-block cp')
+      .attr('transform', d => {
+        if (d.startDate) {
+          return `translate(${x(new Date(d.startDate))}, 0)`;
+        }
+      })
+      .call(appendParentBar);
+
+    parentRects.transition(t).attr('opacity', 1);
+
+    // Add the child bars
+    const childsBlocks = bars
+      .selectAll('.bar')
+      .data(childs)
+      .enter()
+      .append('g');
+
+    const childRects = childsBlocks
       .selectAll('.bar')
       .data(d => d.dates)
       .enter()
@@ -310,7 +337,7 @@ export const gantt = config => {
       })
       .call(appendBar);
 
-    rects.transition(t).attr('opacity', 1);
+    childRects.transition(t).attr('opacity', 1);
 
     const horizontalLines = bars
       .selectAll('.bar')
@@ -374,22 +401,35 @@ export const gantt = config => {
       return moment(node.endDate, 'MM/DD/YYYY').isAfter(dateBoundary[1]);
     }
 
-    function mouseover(d) {
+    function mouseover() {
+      const self = d3.select(this);
+      switchColors(self);
       tooltip.style('display', 'inline');
     }
 
     function mousemove(d) {
       let xPosition = d3.event.pageX;
       let yPosition = d3.event.pageY - 100;
-      console.log(xPosition, yPosition);
       tooltip
         .attr('transform', 'translate(' + xPosition + ',' + yPosition + ')')
         .select('text')
-        .text(`Assigned: ${d.availability}%`);
+        .text(`Assigned: ${d.assigned}%`);
     }
 
     function mouseout() {
+      const self = d3.select(this);
+      switchColors(self);
       tooltip.style('display', 'none');
+    }
+
+    function switchColors(self) {
+      const color = self.attr('fill');
+      const dataColor = self.attr('data-color');
+      const project = self.attr('data-project');
+
+      d3.selectAll(`.${project}`)
+        .attr('fill', dataColor)
+        .attr('data-color', color);
     }
 
     function appendBar(d) {
@@ -401,8 +441,30 @@ export const gantt = config => {
         .attr('x', 0)
         .attr('y', d => y(d.position + 1) + 5)
         .attr('width', d => (d.startDate ? getActualWidth(d) + 10 : 0))
-        .attr('fill', d => `#${d.color}`)
+        .attr(
+          'fill',
+          d =>
+            `#${showChildColor || d.type === 'resource' ? d.color : 'd8d8d8'}`
+        )
+        .attr('data-color', d => `#${d.color}`)
+        .attr('data-project', d => `project-${d.parentId}`)
+        .attr('class', d => `project-${d.parentId}`)
         .on('click', clickBar)
+        .on('mouseover', mouseover)
+        .on('mouseout', mouseout)
+        .on('mousemove', mousemove);
+    }
+
+    function appendParentBar(d) {
+      d.append('rect')
+        .attr('class', 'Single-node')
+        .attr('rx', 0)
+        .attr('ry', 0)
+        .attr('height', 20)
+        .attr('x', 0)
+        .attr('y', (d, i) => y(d.position + 1) + 5)
+        .attr('width', d => (d.startDate ? getActualWidth(d) + 10 : 0))
+        .attr('fill', d => `#${d.color}`)
         .on('mouseover', mouseover)
         .on('mouseout', mouseout)
         .on('mousemove', mousemove);

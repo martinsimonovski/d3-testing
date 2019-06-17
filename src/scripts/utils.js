@@ -1,5 +1,51 @@
 import moment from 'moment';
 
+const intersections = dates => {
+  // TODO: possible bug, what if there are overlapping dates
+  // make a flat array with borders next to eachother
+  let flat = [];
+  dates.forEach(d => {
+    flat.push({
+      date: d.startDate,
+      value: d.value,
+      isStart: true
+    });
+
+    flat.push({
+      date: d.endDate ? d.endDate : '2099-01-01',
+      value: d.value,
+      isStart: false
+    });
+  });
+
+  // sort the array from min > max
+  flat.sort((a, b) => {
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  // always compare 2 dates and just add/subtract the value
+  let current = 0;
+  let intersections = [];
+  for (let i = 0; i < flat.length - 1; i++) {
+    const first = flat[i];
+    const second = flat[i + 1];
+
+    if (first.isStart) {
+      current = current + first.value;
+    } else {
+      current = current - first.value;
+    }
+
+    intersections.push({
+      startDate: first.date,
+      endDate: second.date,
+      value: current
+    });
+  }
+
+  return intersections;
+};
+
 export default {
   getMonthsOfTheYear: date => {
     const year = moment(date).format('YYYY');
@@ -209,6 +255,7 @@ export default {
         item.dates = [];
         item.position = position;
         flatData.push(item);
+        let dates = [];
 
         projects.map((p, index) => {
           position++;
@@ -223,10 +270,16 @@ export default {
             a.parentId = p.id;
             a.type = 'project';
             p.dates.push(a);
+            dates.push({
+              startDate: a.startDate,
+              endDate: a.endDate,
+              value: a.assigned
+            });
           });
 
           flatData.push(p);
         });
+        item.dates = intersections(dates);
         position++;
       });
     } else if (type === 'project') {
@@ -262,7 +315,7 @@ export default {
                 color: project.color,
                 parentId: project.id,
                 position: position,
-                availability: a.availability,
+                assigned: a.assigned,
                 type: 'resource'
               });
             });
@@ -274,5 +327,43 @@ export default {
     }
 
     return flatData;
+  },
+
+  splitNodes: flatData => {
+    let parents = [];
+    let childs = [];
+
+    flatData.forEach(d => {
+      if (d.isParent) {
+        parents.push(d);
+      } else {
+        childs.push(d);
+      }
+    });
+
+    return { parents, childs };
+  },
+
+  convertParentData: parents => {
+    parents.forEach(parent => {
+      const av = parent.availability ? parent.availability : 100;
+      parent.dates.forEach(date => {
+        date.position = parent.position;
+        if (date.value === av) {
+          date.color = '58D68D'; // green
+        } else if (date.value < av && date.value >= 0) {
+          date.color = '5DADE2'; // blue
+        } else if (date.value === 0) {
+          date.color = 'FAD7A0'; //yellow
+        } else if (date.value < 0) {
+          date.color = 'c4c4c4'; // grey
+        } else {
+          // > av
+          date.color = 'EC7063'; // red
+        }
+        date.assigned = date.value;
+      });
+    });
+    return parents;
   }
 };

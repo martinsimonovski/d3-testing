@@ -7,23 +7,24 @@
 // https://bl.ocks.org/varun-raj/5d2caa6a9ad7de08bd5d86698e3a2403
 // http://bl.ocks.org/oluckyman/6199145
 
-import { gantt } from "./gantt";
-import data1 from "./data.1";
-import bigData from "./bigData";
-import "../styles/index.scss";
+import { gantt } from './gantt';
+import data from './data';
+import bigData from './bigData';
+import '../styles/index.scss';
 
 const conf = {
-  data: data1,
-  container: "#chart",
+  data: data,
+  container: '#chart',
   box_padding: 10,
   metrics: {
-    type: "overall",
-    startDate: "2018-08-01 10:11:12.123456",
+    type: 'overall', // [overall, yearly, quarterly-[months,weeks], monthly-[months,weeks]]
+    startDate: '2018-08-01 10:11:12.123456',
     endDate: null,
-    subType: "months"
+    subType: 'months'
   },
+  showChildColor: false,
   headerAdd: () => {
-    alert("Yeyy!!!");
+    alert('Yeyy!!!');
   }
 };
 gantt(conf);
