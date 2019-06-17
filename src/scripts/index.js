@@ -17,10 +17,10 @@ const conf = {
   container: '#chart',
   box_padding: 10,
   metrics: {
-    type: 'overall', // [overall, yearly, quarterly-[months,weeks], monthly-[months,weeks]]
-    startDate: '2018-08-01 10:11:12.123456',
+    type: 'yearly', // [overall, yearly, quarterly-[months,weeks], monthly-[months,weeks]]
+    startDate: '2018-09-01 10:11:12.123456',
     endDate: null,
-    subType: 'months'
+    subType: 'weeks'
   },
   showChildColor: false,
   headerAdd: () => {

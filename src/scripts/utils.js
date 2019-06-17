@@ -351,10 +351,10 @@ export default {
         date.position = parent.position;
         if (date.value === av) {
           date.color = '58D68D'; // green
-        } else if (date.value < av && date.value >= 0) {
-          date.color = '5DADE2'; // blue
         } else if (date.value === 0) {
           date.color = 'FAD7A0'; //yellow
+        } else if (date.value < av && date.value >= 0) {
+          date.color = '5DADE2'; // blue
         } else if (date.value < 0) {
           date.color = 'c4c4c4'; // grey
         } else {

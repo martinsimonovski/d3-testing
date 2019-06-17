@@ -60,7 +60,7 @@ function getBoundaries(metrics) {
         eDate.format('DD MMM YYYY')
       )
     ];
-    headerRanges[0].name = 'Monthly by Week';
+    headerRanges[0].name = 'Monthly by Week - ' + sDate.format('MMM YYYY');
     months = [headerRanges[0].startDate, headerRanges[0].endDate];
 
     if (metrics.subType === 'days') {
@@ -139,7 +139,7 @@ export const gantt = config => {
       .attr('class', 'period-section')
       .style('height', cellHeight)
       .append('svg')
-      .attr('width', width + margin.left + margin.right)
+      .attr('width', width)
       .attr('height', cellHeight);
 
     const leftSideHeader = periodSection
@@ -177,7 +177,7 @@ export const gantt = config => {
 
     const periodRanges = periodSection
       .append('g')
-      .attr('transform', 'translate(300, 0)');
+      .attr('transform', `translate(${leftSideWidth}, 0)`);
 
     switch (state) {
       case 'initial':
@@ -374,6 +374,8 @@ export const gantt = config => {
       .attr('font-size', '12px')
       .attr('font-weight', 'bold');
 
+    tooltip.raise();
+
     function getWidth(node) {
       if (endsAfter(node)) {
         width = Math.abs(
@@ -440,7 +442,7 @@ export const gantt = config => {
         .attr('height', 20)
         .attr('x', 0)
         .attr('y', d => y(d.position + 1) + 5)
-        .attr('width', d => (d.startDate ? getActualWidth(d) + 10 : 0))
+        .attr('width', d => (d.startDate ? getActualWidth(d) : 0))
         .attr(
           'fill',
           d =>
@@ -463,7 +465,7 @@ export const gantt = config => {
         .attr('height', 20)
         .attr('x', 0)
         .attr('y', (d, i) => y(d.position + 1) + 5)
-        .attr('width', d => (d.startDate ? getActualWidth(d) + 10 : 0))
+        .attr('width', d => (d.startDate ? getActualWidth(d) : 0))
         .attr('fill', d => `#${d.color}`)
         .on('mouseover', mouseover)
         .on('mouseout', mouseout)
