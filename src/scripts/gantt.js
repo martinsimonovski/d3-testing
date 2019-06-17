@@ -379,8 +379,9 @@ export const gantt = config => {
     }
 
     function mousemove(d) {
-      let xPosition = d3.event.pageX - 5;
-      let yPosition = d3.event.pageY - 5;
+      let xPosition = d3.event.pageX;
+      let yPosition = d3.event.pageY - 100;
+      console.log(xPosition, yPosition);
       tooltip
         .attr('transform', 'translate(' + xPosition + ',' + yPosition + ')')
         .select('text')
