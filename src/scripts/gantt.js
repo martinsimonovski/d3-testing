@@ -1,87 +1,7 @@
 import * as d3 from 'd3';
 import '../styles/index.scss';
-import colors from './colors';
 import moment from 'moment';
-import utils from './utils';
-
-/*
-const conf = {
-  data: data,
-  container: '#chart',
-  box_padding: 10,
-  metrics: {
-    type: 'yearly',
-    from: '2018-01-01',
-    to: null,
-    subType: 'months'
-  }
-};
-*/
-
-function getBoundaries(metrics) {
-  let months = [];
-  let headerRanges = [];
-  let subHeaderRanges = [];
-  let dateBoundary = [];
-
-  if (metrics.type === 'overall') {
-    const years = utils.getOverallYears(metrics.startDate);
-    headerRanges = [utils.getOverallBoundaries(years)];
-    months = [headerRanges[0].startDate, headerRanges[0].endDate];
-    subHeaderRanges = utils.getOverallYearBoundaries(years);
-  } else if (metrics.type === 'yearly') {
-    months = utils.getMonthsOfTheYear(metrics.startDate);
-    headerRanges = [utils.getYearBoundary(metrics.startDate)];
-    subHeaderRanges = utils.getMonthsRange(months);
-  } else if (metrics.type === 'quarterly') {
-    const quarter = utils.getQuarter(metrics.startDate);
-    months = utils.getQuarterMonths(metrics.startDate);
-    subHeaderRanges = utils.getMonthsRange(months);
-    headerRanges = [utils.getQuarterHeaderRanges(months, quarter)];
-    if (metrics.subType === 'week') {
-      subHeaderRanges = utils.getWeeksRange(
-        headerRanges[0].startDate,
-        headerRanges[0].endDate
-      );
-    }
-  } else if (metrics.type === 'monthly') {
-    const sDate = moment(metrics.startDate);
-    const eDate = metrics.endDate
-      ? moment(metrics.endDate)
-      : sDate.clone().endOf('month');
-    subHeaderRanges = utils.getWeeksRange(
-      sDate.format('DD MMM YYYY'),
-      eDate.format('DD MMM YYYY')
-    );
-
-    headerRanges = [
-      utils.getMontlyBoundaries(
-        sDate.format('DD MMM YYYY'),
-        eDate.format('DD MMM YYYY')
-      )
-    ];
-    headerRanges[0].name = 'Monthly by Week - ' + sDate.format('MMM YYYY');
-    months = [headerRanges[0].startDate, headerRanges[0].endDate];
-
-    if (metrics.subType === 'days') {
-      subHeaderRanges = utils.getDaysRange(sDate, eDate);
-    }
-  }
-
-  dateBoundary[0] = moment(months[0], 'MMM YYYY')
-    .startOf('month')
-    .toDate();
-  dateBoundary[1] = moment(months[months.length - 1], 'MMM YYYY')
-    .endOf('month')
-    .toDate();
-
-  return {
-    months,
-    headerRanges,
-    subHeaderRanges,
-    dateBoundary
-  };
-}
+import * as utils from './utils';
 
 export const gantt = config => {
   const { metrics, container, data, headerAdd, showChildColor } = config;
@@ -92,13 +12,18 @@ export const gantt = config => {
   const cellHeight = 30;
   const leftSideWidth = 300;
   const rawData = JSON.parse(JSON.stringify(data));
-  const convertedData = utils.convertData(data, 'resource');
+  const convertedData = utils.convertDataResource(data);
+
+  const CHART_TYPES = {
+    RESOURCE: 'resource',
+    PROJECT: 'project'
+  };
 
   draw('initial', convertedData);
-  function draw(state, data) {
+  function draw(state, data, chartType = 'resource') {
     const chartHeight = d3.max([data.length * cellHeight + 120]);
     d3.select(container)._groups[0][0].innerHTML = '';
-    let { headerRanges, subHeaderRanges, dateBoundary } = getBoundaries(
+    let { headerRanges, subHeaderRanges, dateBoundary } = utils.getBoundaries(
       metrics
     );
 
@@ -292,8 +217,11 @@ export const gantt = config => {
     const bars = svg.append('g').attr('transform', 'translate(0, 0)');
 
     let { parents, childs } = utils.splitNodes(data);
-
-    parents = utils.convertParentData(parents);
+    if (chartType === CHART_TYPES.PROJECT) {
+      parents = utils.convertParentDataProject(parents);
+    } else {
+      parents = utils.convertParentDataResource(parents);
+    }
 
     // Add the parent bars
     const parentBlocks = bars
@@ -412,10 +340,18 @@ export const gantt = config => {
     function mousemove(d) {
       let xPosition = d3.event.pageX;
       let yPosition = d3.event.pageY - 100;
-      tooltip
-        .attr('transform', 'translate(' + xPosition + ',' + yPosition + ')')
-        .select('text')
-        .text(`Assigned: ${d.assigned}%`);
+
+      if (d.type === CHART_TYPES.PROJECT && chartType === CHART_TYPES.PROJECT) {
+        tooltip
+          .attr('transform', 'translate(' + xPosition + ',' + yPosition + ')')
+          .select('text')
+          .text(`Needed: ${d.needed}% Current: ${d.current}`);
+      } else {
+        tooltip
+          .attr('transform', 'translate(' + xPosition + ',' + yPosition + ')')
+          .select('text')
+          .text(`Assigned: ${d.assigned}%`);
+      }
     }
 
     function mouseout() {
@@ -472,14 +408,15 @@ export const gantt = config => {
         .on('mousemove', mousemove);
     }
 
-    function clickBar(d, i, j) {
+    function clickBar(d) {
       let converted = [];
       if (d.type === 'resource') {
-        converted = utils.convertData(rawData, 'resource');
+        converted = utils.convertDataResource(rawData);
+        draw('initial', converted, CHART_TYPES.RESOURCE);
       } else {
-        converted = utils.convertData(rawData, 'project', d.parentId);
+        converted = utils.convertDataProject(rawData, d.parentId);
+        draw('initial', converted, CHART_TYPES.PROJECT);
       }
-      draw('initial', converted);
     }
   }
 };

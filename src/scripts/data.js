@@ -106,6 +106,23 @@ export default [
         id: 8,
         name: 'Med Universe',
         color: 'a5dee5',
+        dates: [
+          {
+            startDate: '2017-08-09',
+            endDate: '2018-10-01',
+            required: 200
+          },
+          {
+            startDate: '2018-10-02',
+            endDate: '2019-06-06',
+            required: 300
+          },
+          {
+            startDate: '2019-06-07',
+            endDate: null,
+            required: 260
+          }
+        ],
         assignments: [
           {
             startDate: '2017-08-09',
@@ -145,7 +162,7 @@ export default [
         assignments: [
           {
             startDate: '2017-04-01',
-            endDate: '2018-06-10',
+            endDate: '2018-06-09',
             assigned: 100
           },
           {
@@ -159,9 +176,26 @@ export default [
         id: 8,
         name: 'Med Universe',
         color: 'a5dee5',
+        dates: [
+          {
+            startDate: '2017-08-09',
+            endDate: '2018-10-01',
+            required: 200
+          },
+          {
+            startDate: '2018-10-02',
+            endDate: '2019-06-06',
+            required: 300
+          },
+          {
+            startDate: '2019-06-07',
+            endDate: null,
+            required: 260
+          }
+        ],
         assignments: [
           {
-            startDate: '2018-06-10',
+            startDate: '2018-06-11',
             endDate: '2018-10-01',
             assigned: 60
           },
@@ -169,6 +203,47 @@ export default [
             startDate: '2018-10-15',
             endDate: null,
             assigned: 100
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 4,
+    firstName: 'Borche',
+    lastName: '',
+    projects: [
+      {
+        id: 8,
+        name: 'Med Universe',
+        color: 'a5dee5',
+        dates: [
+          {
+            startDate: '2017-08-09',
+            endDate: '2018-10-01',
+            required: 200
+          },
+          {
+            startDate: '2018-10-02',
+            endDate: '2019-06-06',
+            required: 300
+          },
+          {
+            startDate: '2019-06-07',
+            endDate: null,
+            required: 260
+          }
+        ],
+        assignments: [
+          {
+            startDate: '2018-06-10',
+            endDate: '2019-04-01',
+            assigned: 100
+          },
+          {
+            startDate: '2019-04-02',
+            endDate: null,
+            assigned: 80
           }
         ]
       }
