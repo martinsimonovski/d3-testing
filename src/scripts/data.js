@@ -5,6 +5,7 @@ export default [
     id: 1,
     firstName: 'Martin',
     lastName: 'Simonovski',
+    availability: 100,
     projects: [
       {
         id: 1,
@@ -77,6 +78,7 @@ export default [
     id: 2,
     firstName: 'Petar',
     lastName: 'Blazevski',
+    availability: 80,
     projects: [
       {
         id: 6,
@@ -154,6 +156,7 @@ export default [
     id: 3,
     firstName: 'Aleko',
     lastName: 'Markovski',
+    availability: 100,
     projects: [
       {
         id: 12,
@@ -212,6 +215,7 @@ export default [
     id: 4,
     firstName: 'Borche',
     lastName: '',
+    availability: 100,
     projects: [
       {
         id: 8,

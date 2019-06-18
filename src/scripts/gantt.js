@@ -281,7 +281,7 @@ export const gantt = config => {
     leftSideCells.raise(); // hide the bars
 
     // TOOLTIP
-    const tooltipWidth = 100;
+    const tooltipWidth = 200;
     const tooltip = drawArea
       .append('g')
       .attr('class', 'tooltip')
@@ -338,19 +338,20 @@ export const gantt = config => {
     }
 
     function mousemove(d) {
-      let xPosition = d3.event.pageX;
-      let yPosition = d3.event.pageY - 100;
+      let xPosition = d3.event.pageX - 60;
+      let yPosition =
+        d3.event.pageY - (d3.event.pageY / 2 > height / 2 ? 120 : 50);
 
       if (d.type === CHART_TYPES.PROJECT && chartType === CHART_TYPES.PROJECT) {
         tooltip
           .attr('transform', 'translate(' + xPosition + ',' + yPosition + ')')
           .select('text')
-          .text(`Needed: ${d.needed}% Current: ${d.current}`);
+          .text(`Needed: ${d.needed}%; Current: ${d.current}`);
       } else {
         tooltip
           .attr('transform', 'translate(' + xPosition + ',' + yPosition + ')')
           .select('text')
-          .text(`Assigned: ${d.assigned}%`);
+          .text(`Assigned: ${d.assigned}%; Availability: ${d.availability}`);
       }
     }
 

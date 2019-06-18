@@ -336,6 +336,7 @@ export const convertDataResource = data => {
         a.position = p.position;
         a.parentId = p.id;
         a.type = 'project';
+        a.availability = item.availability;
         p.dates.push(a);
         dates.push({
           startDate: a.startDate,
@@ -446,6 +447,7 @@ export const convertParentDataResource = parents => {
     const av = parent.availability ? parent.availability : 100;
     parent.dates.forEach(date => {
       date.position = parent.position;
+      date.availability = parent.availability ? parent.availability : 100;
       if (date.value === av) {
         date.color = '58D68D'; // green
       } else if (date.value === 0) {
