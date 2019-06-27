@@ -17,7 +17,7 @@ const conf = {
   container: '#chart',
   box_padding: 10,
   metrics: {
-    type: 'quarterly', // [overall, yearly, quarterly-[months,weeks], monthly-[months,weeks]]
+    type: 'overall', // [overall, yearly, quarterly-[months,weeks], monthly-[months,weeks]]
     startDate: '2019-04-01 10:11:12.123456',
     endDate: null,
     subType: 'weeks'

@@ -223,6 +223,25 @@ export const gantt = config => {
       parents = utils.convertParentDataResource(parents);
     }
 
+    // parent backgrounds
+    const parentBGs = bars
+      .selectAll('.bar')
+      .data(parents)
+      .enter()
+      .append('g');
+
+    const parentBgsRects = parentBGs
+      .selectAll('.bar')
+      .data(d => d.dates)
+      .enter()
+      .append('g')
+      .attr('transform', d => {
+        if (d.startDate) {
+          return `translate(${x(new Date(d.startDate))}, 0)`;
+        }
+      })
+      .call(appendParentBg);
+
     // Add the parent bars
     const parentBlocks = bars
       .selectAll('.bar')
@@ -376,7 +395,7 @@ export const gantt = config => {
         .attr('class', 'Single-node')
         .attr('rx', 5)
         .attr('ry', 5)
-        .attr('height', 20)
+        .attr('height', cellHeight - 10)
         .attr('x', 0)
         .attr('y', d => y(d.position + 1) + 5)
         .attr('width', d => (d.startDate ? getActualWidth(d) : 0))
@@ -407,6 +426,18 @@ export const gantt = config => {
         .on('mouseover', mouseover)
         .on('mouseout', mouseout)
         .on('mousemove', mousemove);
+    }
+
+    function appendParentBg(d) {
+      d.append('rect')
+        .attr('rx', 0)
+        .attr('ry', 0)
+        .attr('height', d => cellHeight * d.children + 30)
+        .attr('x', 0)
+        .attr('y', (d, i) => y(d.position + 1))
+        .attr('width', d => (d.startDate ? getActualWidth(d) : 0))
+        .attr('fill', d => `#${d.color}`)
+        .attr('opacity', 0.2);
     }
 
     function clickBar(d) {

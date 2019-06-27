@@ -321,6 +321,7 @@ export const convertDataResource = data => {
     item.isParent = true;
     item.dates = [];
     item.position = position;
+    item.children = projects.length;
     flatData.push(item);
     let dates = [];
 
@@ -448,6 +449,7 @@ export const convertParentDataResource = parents => {
     parent.dates.forEach(date => {
       date.position = parent.position;
       date.availability = parent.availability ? parent.availability : 100;
+      date.children = parent.children;
       if (date.value === av) {
         date.color = '58D68D'; // green
       } else if (date.value === 0) {
@@ -470,6 +472,7 @@ export const convertParentDataProject = parents => {
     parent.dates.forEach(date => {
       date.position = parent.position;
       date.type = parent.type;
+      date.children = parent.children;
       if (date.needed === date.current) {
         date.color = '58D68D'; // green
       } else if (date.needed === 0) {
